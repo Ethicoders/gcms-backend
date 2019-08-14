@@ -1,0 +1,10 @@
+[
+  {
+    "name": "test",
+    "isEnabled": false
+  },
+  {
+    "name": "posts",
+    "isEnabled": true
+  }
+]

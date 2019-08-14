@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "lib": ["es2017", "esnext.asynciterable", "dom"],
+    "target": "es2017",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "resolveJsonModule": true,
+    "outDir": "dist",
+    "typeRoots": ["node_modules/@types"],
+    "paths": {
+      "@models": ["./generated-models"],
+      "@modules/*": ["./modules/*"],
+      "@/*": [
+        "./*"
+      ],
+    },
+    "baseUrl": "./src/",
+    "allowSyntheticDefaultImports": true,
+    "plugins": [
+      {
+        "transform": "typescript-transform-paths"
+      },
+      {
+        "transform": "typescript-transform-paths",
+        "afterDeclarations": true
+      }
+    ]
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}

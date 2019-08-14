@@ -1,0 +1,20 @@
+# Will have to group SDK modules schemas instead
+
+overwrite: true
+schema: ./src/schema.ts
+require:
+  - ts-node/register/transpile-only
+  - tsconfig-paths/register
+generates:
+  ./src/generated-models.ts:
+    plugins:
+      - add: /* tslint:ignore */
+      - typescript-common
+      - typescript-mongodb
+      - typescript-server
+      - typescript-resolvers
+    config:
+      contextType: "@graphql-modules/core#ModuleContext"
+      mappers:
+        Chat: ChatDbObject
+        Message: MessageDbObject
