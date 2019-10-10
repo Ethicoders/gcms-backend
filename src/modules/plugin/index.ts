@@ -4,20 +4,32 @@ import Plugin from './providers/Plugin';
 import mutation from './resolvers/mutation';
 import query from './resolvers/query';
 import plugin from './resolvers/plugin';
+import ConsumerModule from '../consumer';
+import emitter from '@/emitter';
+import { exec } from 'child_process';
 
-export default new GraphQLModule({
+export interface PluginModuleConfig {
+  pluginsFilePath: string;
+  pluginsDirectory: string;
+}
+
+export default new GraphQLModule<PluginModuleConfig>({
+  name: 'plugin',
   typeDefs: gql`
-    type Plugin {
+    "A gcms plugin, can be enabled or not"
+    type Plugin @isAuthenticated(roles: ["admin"]) {
       name: String!
       isEnabled: Boolean!
     }
 
     type Query {
-      getPlugins: [Plugin!]!
+      getPlugin(name: String): Plugin
+      getListOfPlugin: [Plugin!]!
     }
 
     type Mutation {
-      updatePlugin(plugin: PluginUpdateInput!): PluginUpdatePayload
+      updatePlugin(input: PluginUpdateInput!): PluginUpdatePayload
+      installPlugin(name: String!): Plugin
     }
 
     input PluginUpdateInput {
@@ -29,11 +41,12 @@ export default new GraphQLModule({
       plugin: Plugin
     }
   `,
-  providers: ({ config: { pluginsFilePath } }) => {
+  imports: [ConsumerModule],
+  providers: ({ config: { pluginsFilePath, pluginsDirectory } }) => {
     return [
       {
         provide: Plugin,
-        useFactory: () => new Plugin(pluginsFilePath),
+        useFactory: () => new Plugin(pluginsFilePath, pluginsDirectory),
       },
     ];
   },

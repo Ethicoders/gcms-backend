@@ -1,6 +1,6 @@
 export default {
   Consumer: {
-    // id: consumer => consumer._id,
+    id: consumer => consumer._id,
     login: consumer => consumer.login,
   },
 };

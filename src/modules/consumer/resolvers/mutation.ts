@@ -7,19 +7,21 @@ const APP_SECRET = 'test';
 
 export default {
   Mutation: {
-    updateConsumer: async (root, { consumer }, { injector }: ModuleContext) => {
-      (await (injector.get('DB') as Db)).collection('consumers').updateOne(
-        { _id: new ObjectId(consumer.id) },
-        {
-          $set: consumer,
-        },
-      );
+    updateConsumer: async (root, { input }, { injector }: ModuleContext) => {
+      await ((await injector.get('DB')) as Db)
+        .collection('consumers')
+        .updateOne(
+          { _id: new ObjectId(input.id) },
+          {
+            $set: input,
+          },
+        );
       return {
-        consumer,
+        consumer: input,
       };
     },
     signUp: async (root, { login, password }, { injector }: ModuleContext) => {
-      const db = await (injector.get('DB') as Db);
+      const db = await ((await injector.get('DB')) as Db);
 
       const collection = db.collection('consumers');
 
@@ -58,6 +60,10 @@ export default {
       }
 
       const token = sign({ userId: consumer._id }, APP_SECRET);
+
+      await ((await injector.get('DB')) as Db)
+        .collection('consumers')
+        .updateOne({ login }, { $set: { token } });
 
       return {
         token,

@@ -2,34 +2,38 @@ import { GraphQLModule } from '@graphql-modules/core';
 
 import gql from 'graphql-tag';
 import Database from './providers/Database';
+import { Pool, createPool } from 'generic-pool';
+import { MongoClient } from 'mongodb';
+import { DatabaseProvider } from './providers/database.provider';
 
 export default new GraphQLModule({
-  name: 'Database',
-  typeDefs: [
-    gql`
-      type Entity {
-        name: String!
-        fields: [Field!]!
-        canCreate: Boolean
-        canUpdate: Boolean
-        canDelete: Boolean
-      }
+  name: 'database',
+  // typeDefs: [
+  //   gql`
+  //     type Entity @isAuthenticated {
+  //       test: String
+  //     }
 
-      type Field {
-        name: String!
-        isRequired: Boolean
-        isPublic: Boolean
-      }
-    `,
-  ],
+  //   `,
+  // ],
   providers: ({ config: { url, databaseName } }) => {
     return [
       {
         provide: 'DB',
+        //   provide: Pool,
         useFactory: () => {
           return Database.instantiate(url, databaseName);
         },
+        //   useFactory: () =>
+        //     createPool({
+        //       create: () =>
+        //         MongoClient.connect(url, {
+        //           useNewUrlParser: true,
+        //         }),
+        //       destroy: client => client.close(),
+        //     }),
       },
+      // DatabaseProvider,
     ];
   },
   configRequired: true,

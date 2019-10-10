@@ -2,6 +2,7 @@ import { Resolver, Query, Mutation, Arg } from 'type-graphql';
 import { Plugin, PluginUpdate, PluginInput } from './types';
 import FileJSON from '@/utils/json';
 import { Inject } from '@graphql-modules/di';
+import emitter from '@/emitter';
 
 @Resolver()
 export default class {

@@ -1,84 +1,81 @@
 import * as express from 'express';
 import * as graphqlHTTP from 'express-graphql';
-import FileJSON from '@/utils/json';
-import { ConsumerModule, DatabaseModule, PluginModule } from '@/modules';
-import { GraphQLModule } from '@graphql-modules/core';
+import * as cors from 'cors';
+import emitter from './emitter';
 
+// There should be no global default config but "per module" default config, TBI
 const defaultConfig = {
+  // App and plugin will be part of core
   app: {
     graphqlRoot: '/',
     port: 4000,
     graphiql: true,
   },
   plugin: {
+    pluginsPrefix: '', // Empty string by default so it's required from local node_modules
     pluginsFilePath: __dirname + '/plugins.json',
   },
+
+  // Should be a standalone
   database: {
     url: 'mongodb://localhost:27017',
     databaseName: 'test',
   },
-  modulesPath: __dirname + '/modules'
 };
 
 /*
-Check if default exports are supported by Elm/PureScript/other bundlers
+Check if default exports are supported by Elm/PureScript/other transpilers and bundlers
 If not, use named exports instead and loop over the object to get a 
 value that matches a plugin definition
 */
 
-const getEnabledModules = plugins => {
-  return plugins
-    .filter(plugin => plugin.isEnabled)
-    .map(plugin => require(`graphql-cms-${plugin.name}`).default);
-};
-
-export default (inputConfig: typeof defaultConfig) => {
+export default async (inputConfig: typeof defaultConfig) => {
   const app = express();
 
   const config = { ...defaultConfig, ...inputConfig };
 
+  app.use('/graphql', cors());
+
+  const schema = await require('@/modules/app').default(config);
+
   app.use(
     config.app.graphqlRoot,
-    graphqlHTTP(async (request, response, graphQLParams) => {
-      const pluginsFile = new FileJSON(config.plugin.pluginsFilePath);
-      const plugins = await pluginsFile.read();
-      const enabledModules = getEnabledModules(plugins);
-      console.log(enabledModules);
-      
-      const RootModule = new GraphQLModule({
-        imports: ({ config: { plugin, database } }) => [
-          DatabaseModule.forRoot(database),
-          PluginModule.forRoot(plugin),
-          ConsumerModule,
-          ...enabledModules,
-        ],
-        configRequired: true,
+    graphqlHTTP((request, response, graphQLParams) => {
+      let chaining = '';
+      emitter.once('dispatch:chaining', eventChaining => {
+        chaining = eventChaining;
       });
-      // const test = RootModule.forRoot(config);
-      const { schema } = RootModule.forRoot(config);
-      // console.log(test.schema);
-      
-      // const { schema } = AppModule.forRoot(config);
-      response.setHeader('Access-Control-Allow-Origin', '*');
-
-      // SchemaDirectiveVisitor.visitSchemaDirectives(schema, schemaDirectives);
-
-      // writeFileSync('schema.gql', printSchema(schema));
-
       return {
         schema,
+        request,
+        customFormatErrorFn: error => ({
+          message: error.message,
+          locations: error.locations,
+          stack: error.stack,
+          path: error.path,
+        }),
+        extensions: ({
+          document,
+          variables,
+          operationName,
+          result,
+          context,
+        }) => {
+          return {
+            chaining,
+            duration: Date.now() - (context as any).startTime,
+          };
+        },
+        context: { startTime: Date.now() },
         graphiql: config.app.graphiql,
       };
     }),
   );
 
-  app.listen(config.app.port, () => {
-    console.log(
-      `Server ready at http://localhost:${config.app.port}${
-        config.app.graphqlRoot
-      }`,
-    );
-  });
+  const server = app.listen(config.app.port);
 
+  server.on('listening', () => {
+    emitter.emit('ready');
+  });
   return app;
 };

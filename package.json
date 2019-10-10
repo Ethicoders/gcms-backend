@@ -1,5 +1,5 @@
 {
-  "name": "graphql-cms-back-sdk",
+  "name": "gcms-backend-sdk",
   "version": "1.0.0",
   "description": "GraphQL CMS - backend SDK",
   "main": "dist/index.js",
@@ -10,28 +10,39 @@
     "generate": "gql-gen",
     "generate:watch": "nodemon --exec yarn generate -e graphql",
     "start:server": "ts-node -r tsconfig-paths/register src/index.ts",
-    "start:server:watch": "nodemon --exec yarn start:server -e ts",
-    "dev": "concurrently \"yarn generate:watch\" \"yarn start:server:watch\"",
+    "start:server:watch": "nodemon --watch dist --exec node index.js",
+    "dev": "concurrently \"yarn watch\" \"yarn start:server:watch\"",
     "start": "yarn generate && yarn start:server",
-    "build": "ttsc && yalc publish",
-    "build:watch": "nodemon --exec tsc"
+    "build": "ttsc && yalc push",
+    "build:watch": "nodemon --exec tsc",
+    "watch": "ttsc -w"
   },
   "dependencies": {
     "@graphql-modules/core": "0.6.1",
     "@types/express": "4.16.1",
     "@types/express-graphql": "0.6.2",
     "@types/graphql": "14.0.4",
+    "apollo-server-express": "2.9.2",
     "bcryptjs": "2.4.3",
+    "body-parser": "1.19.0",
+    "cors": "2.8.5",
     "express": "4.16.4",
-    "express-graphql": "0.7.1",
-    "graphql": "^14.1.1",
+    "express-graphql": "0.9.0",
+    "gcms-scoped-schema": "file:.yalc/gcms-scoped-schema",
+    "generic-pool": "3.7.1",
+    "graphql": "14.5.4",
+    "graphql-add-middleware": "0.3.7",
+    "graphql-directive-auth": "0.3.2",
+    "graphql-tag": "2.10.1",
     "graphql-toolkit": "0.2.6",
     "graphql-tools": "4.0.4",
+    "graphql-tools-types": "1.2.2",
     "jsonwebtoken": "8.5.1",
     "module-alias": "2.2.0",
     "mongodb": "3.2.7",
     "reflect-metadata": "0.1.12",
     "ts-node": "7.0.1",
+    "ts-node-dev": "1.0.0-pre.42",
     "tsconfig-paths": "3.7.0",
     "type-graphql": "0.17.4",
     "typescript": "3.2.2"
@@ -48,7 +59,18 @@
     "graphql-codegen-typescript-server": "0.18.0",
     "jest": "24.8.0",
     "nodemon": "1.18.9",
+    "onchange": "6.0.0",
     "ttypescript": "1.5.7",
-    "typescript-transform-paths": "1.1.8"
+    "typescript-transform-paths": "1.1.8",
+    "winston": "3.2.1"
+  },
+  "nodemonConfig": {
+    "watch": [
+      "./src/**/*.ts"
+    ],
+    "ignore": [
+      "src/**/*.spec.ts"
+    ],
+    "exec": "ts-node -C ttypescript ./src/index.ts"
   }
 }
