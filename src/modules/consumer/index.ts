@@ -8,7 +8,7 @@ import { SchemaDirectiveVisitor } from 'graphql-tools';
 import AuthProvider, { store } from './storage';
 import { GraphQLObjectType, GraphQLField } from 'graphql';
 import DiscoverProvider, { FORBIDDEN_TYPES } from '../discover';
-import { DatabaseProvider } from '@modules/database/providers/database.provider';
+import { DatabaseProvider } from '@/modules/database/providers/database.provider';
 
 class IsAuthenticatedDirective extends SchemaDirectiveVisitor {
   public visitFieldDefinition(

@@ -28,6 +28,7 @@
     "cors": "2.8.5",
     "express": "4.16.4",
     "express-graphql": "0.9.0",
+    "express-ws": "4.0.0",
     "gcms-scoped-schema": "file:.yalc/gcms-scoped-schema",
     "generic-pool": "3.7.1",
     "graphql": "14.5.4",
@@ -61,8 +62,7 @@
     "nodemon": "1.18.9",
     "onchange": "6.0.0",
     "ttypescript": "1.5.7",
-    "typescript-transform-paths": "1.1.8",
-    "winston": "3.2.1"
+    "typescript-transform-paths": "1.1.8"
   },
   "nodemonConfig": {
     "watch": [

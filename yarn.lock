@@ -2428,6 +2428,13 @@ express-graphql@0.9.0:
     http-errors "^1.7.3"
     raw-body "^2.4.1"
 
+express-ws@4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/express-ws/-/express-ws-4.0.0.tgz#dabd8dc974516418902a41fe6e30ed949b4d36c4"
+  integrity sha512-KEyUw8AwRET2iFjFsI1EJQrJ/fHeGiJtgpYgEWG3yDv4l/To/m3a2GaYfeGyB3lsWdvbesjF5XCMx+SVBgAAYw==
+  dependencies:
+    ws "^5.2.0"
+
 express@4.16.4:
   version "4.16.4"
   resolved "https://registry.yarnpkg.com/express/-/express-4.16.4.tgz#fddef61926109e24c515ea97fd2f1bdbf62df12e"
@@ -2708,9 +2715,6 @@ gauge@~2.7.3:
     string-width "^1.0.1"
     strip-ansi "^3.0.1"
     wide-align "^1.1.0"
-
-"gcms-blog@file:.yalc/gcms-blog":
-  version "0.0.1-64138718"
 
 "gcms-scoped-schema@file:.yalc/gcms-scoped-schema":
   version "1.0.0-b38f18f1"

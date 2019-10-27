@@ -22,6 +22,13 @@ export default async config => {
 
   const plugins = await pluginsFile.read();
   const enabledModules = getEnabledModules(plugins);
+  enabledModules.forEach(enabledModule => {
+    enabledModule._options.imports = enabledModule._options.imports || [];
+    enabledModule._options.imports = [
+      ...builtinModules,
+      ...enabledModule._options.imports,
+    ];
+  });
 
   const modulesToImport = [...builtinModules, ...enabledModules];
 
@@ -93,8 +100,6 @@ export default async config => {
         scalar DirectiveLocation
 
         scalar TypeKind
-
-        scalar Null
       `,
       providers: [DiscoverProvider],
       resolvers: {

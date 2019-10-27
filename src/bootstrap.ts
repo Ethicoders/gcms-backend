@@ -2,6 +2,7 @@ import * as express from 'express';
 import * as graphqlHTTP from 'express-graphql';
 import * as cors from 'cors';
 import emitter from './emitter';
+import * as WebSocket from 'ws';
 
 // There should be no global default config but "per module" default config, TBI
 const defaultConfig = {
@@ -42,6 +43,7 @@ export default async (inputConfig: typeof defaultConfig) => {
     config.app.graphqlRoot,
     graphqlHTTP((request, response, graphQLParams) => {
       let chaining = '';
+
       emitter.once('dispatch:chaining', eventChaining => {
         chaining = eventChaining;
       });
@@ -74,8 +76,15 @@ export default async (inputConfig: typeof defaultConfig) => {
 
   const server = app.listen(config.app.port);
 
+  const webSocketServer = new WebSocket.Server({ server });
+
+  webSocketServer.on('connection', ws => {
+    ws.on('message', () => {});
+  });
+
   server.on('listening', () => {
     emitter.emit('ready');
   });
+
   return app;
 };
